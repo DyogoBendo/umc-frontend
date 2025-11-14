@@ -1,7 +1,10 @@
 import {createBrowserRouter, Navigate} from 'react-router'
 import ProblemsPage from "./pages/problems"
 import ProblemPage from './pages/problem';
+import ProblemSetsPage from './pages/problem-sets'
+
 import { AppLayout } from './layout/app';
+import ProblemAttemptsPage from './pages/problem-attempts';
 
 export const router = createBrowserRouter(
     [
@@ -24,6 +27,24 @@ export const router = createBrowserRouter(
                             path: ':problemId',
                             element: <ProblemPage/>
                         }
+                    ]
+                },
+                {
+                    path: 'problem-sets',
+                    children: [
+                        {
+                            index: true,
+                            element: <ProblemSetsPage/>
+                        },
+                    ]
+                },
+                {
+                    path: 'problem-attempts',
+                    children: [
+                        {
+                            index: true,
+                            element: <ProblemAttemptsPage/>
+                        },
                     ]
                 }
             ]

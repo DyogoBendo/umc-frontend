@@ -5,4 +5,4 @@ export const problemSetSchema = z.object({
     name: z.string()
 });
 
-export type Problem = z.infer<typeof problemSetSchema>
+export type ProblemSet = z.infer<typeof problemSetSchema>
