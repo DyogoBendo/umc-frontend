@@ -1,9 +1,9 @@
 import z from 'zod'
 
 export const platformSchema = z.object({
-    id: z.number(),
-    name: z.string(),
-    link: z.string()
+    id: z.number().nullable(),
+    name: z.string().nullable(),
+    link: z.string().nullable()
 });
 
 export type Platform = z.infer<typeof platformSchema>
