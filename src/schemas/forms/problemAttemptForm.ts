@@ -4,10 +4,9 @@ import { competitorSchema } from '../entities/competitor'
 import { platformSchema } from '../entities/platform'
 import { problemSetSchema } from '../entities/problemSet'
 
-export const problemAttemptFormSchema = z.object({
-    id: z.number().optional(),    
+export const problemAttemptFormSchema = z.object({    
     problem: problemSchema.nullable(),
-    competitor: competitorSchema.nullable(),
+    competitor: competitorSchema.nullable(),    
     platform: platformSchema.nullable(),
     date: z.date().optional(),
     link: z.string().optional(),

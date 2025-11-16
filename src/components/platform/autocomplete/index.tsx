@@ -24,7 +24,7 @@ export default function PlatformAutocomplete() {
     <Controller
       name="platform"
       control={control}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <Autocomplete
           freeSolo 
           options={options}
@@ -62,6 +62,8 @@ export default function PlatformAutocomplete() {
             <TextField
               {...params}
               label="Platform" // NOVO: Label
+              error={!!fieldState.error} // <--- MUDANÇA AQUI
+              helperText={fieldState.error?.message} // <--- MUDANÇA AQUI
               InputProps={{
                 ...params.InputProps,
                 endAdornment: (

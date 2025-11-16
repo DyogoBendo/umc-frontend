@@ -5,7 +5,7 @@ import ProblemSetsPage from './pages/problem-sets'
 
 import { AppLayout } from './layout/app';
 import ProblemAttemptsPage from './pages/problem-attempts';
-import { ProblemAttemptForm } from './components/problem-attempt/forms';
+import {ProblemAttemptFormComponent } from './components/problem-attempt/forms';
 
 export const router = createBrowserRouter(
     [
@@ -48,7 +48,7 @@ export const router = createBrowserRouter(
                         },
                         {
                             path: 'create',
-                            element: <ProblemAttemptForm/>
+                            element: <ProblemAttemptFormComponent/>
                         }
                     ]
                 }

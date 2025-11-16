@@ -1,33 +1,55 @@
 import { useForm, Controller, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import dayjs from 'dayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { problemAttemptSchema } from "../../../schemas/entities/problemAttempt";
 import ProblemService from "../../../services/problemService";
 import PlatformService from "../../../services/platformService";
 import ProblemAutocomplete from "../../problem/autocomplete";
 import ProblemSetAutocomplete from "../../problem-set/autocomplete";
-import { problemAttemptFormSchema } from "../../../schemas/forms/problemAttemptForm";
+import { problemAttemptFormSchema, type ProblemAttemptForm} from "../../../schemas/forms/problemAttemptForm";
 import PlatformAutocomplete from "../../platform/autocomplete";
+import { Box, Stack, TextField, FormControlLabel, Checkbox, Button } from "@mui/material";
+import CompetitorAutocomplete from "../../competitor/autocomplete";
+import problemAttemptService from "../../../services/problemAttemptService";
+import { useNavigate } from "react-router";
 
-export function ProblemAttemptForm() {
+export function ProblemAttemptFormComponent() {
+  const navigate = useNavigate()
 
   // Keep the entire form object instead of destructuring
-  const form = useForm({
+  const form = useForm<ProblemAttemptForm>({
     resolver: zodResolver(problemAttemptFormSchema),
     defaultValues: {
-      problem: null,
-      platform: null,
+      problem: null,      
       competitor: null,     
       problemSet: null, 
-      date: new Date()
+      platform: null,
+      date: new Date(),
+      link: "",
+      time: 0,
+      wa: 0,
+      neededHelp: false,
     }
   });
 
-  const { register, handleSubmit, formState: { errors } } = form;
+  // Pegue o 'control' para usar com o Controller
+  const { control, handleSubmit, formState: { isSubmitting } } = form;
 
-  const onSubmit = (data: any) => {     
-    console.log("oi");
-    console.log("FORM:", data);
+  const onSubmit = async (data: ProblemAttemptForm) => {         
+    try {      
+      console.log(data);
+      // Se não temos ID, estamos criando
+      await problemAttemptService.create(data);
+      console.log("Tentativa criada com sucesso!");
+      navigate('/problem-attempts')
+      // (Opcional: limpar o formulário após criar)
+      // form.reset(); 
+    } catch (error) {
+      console.error("Falha ao salvar a tentativa:", error);
+      // (Opcional: mostrar um 'toast' de erro para o usuário)
+    }
   };
 
   const onError = (errorList: any) => {
@@ -36,19 +58,116 @@ export function ProblemAttemptForm() {
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit, onError)}>
-        <div>
-          <ProblemSetAutocomplete/>
-        </div>
-        <div>
-          <ProblemAutocomplete/>
-        </div>
-        <div>
-          <PlatformAutocomplete/>
-        </div>
+      <Box
+        component="form"
+        onSubmit={handleSubmit(onSubmit, onError)}
+        sx={{ width: '100%', maxWidth: 500, margin: 'auto' }}
+      >
+        <Stack spacing={2.5}> {/* Define o espaçamento vertical */}
 
-        <button type="submit">Save</button>
-      </form>
+          {/* Seus Autocompletes. (Veja a Seção 4!) */}          
+          <CompetitorAutocomplete/>
+          <PlatformAutocomplete />
+          <ProblemSetAutocomplete />
+          <ProblemAutocomplete />
+
+          {/* --- Campo de Data (DatePicker) --- */}
+          <Controller
+            name="date"
+            control={control}
+            render={({ field, fieldState }) => (
+              <DatePicker
+                label="Data da Tentativa"
+                value={field.value ? dayjs(field.value) : null} // Correto
+                onChange={(newValue) => { // Correto
+                  field.onChange(newValue ? newValue.toDate() : null);
+                }}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: !!fieldState.error,
+                    helperText: fieldState.error?.message,
+                  },
+                }}
+                // --- FIM DA CORREÇÃO ---
+              />
+            )}
+          />
+
+          {/* --- Campo de Link (TextField) --- */}
+          <Controller
+            name="link"
+            control={control}
+            render={({ field, fieldState }) => (
+              <TextField
+                {...field}
+                label="Link (Opcional)"
+                type="url"
+                fullWidth
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+              />
+            )}
+          />
+
+          {/* --- Campo de Tempo (TextField Numérico) --- */}
+          <Controller
+            name="time"
+            control={control}
+            render={({ field, fieldState }) => (
+              <TextField
+                {...field}
+                label="Tempo (min)"
+                type="number"
+                fullWidth
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+                // Converte a string do input de volta para número
+                onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
+              />
+            )}
+          />
+
+          {/* --- Campo de WA (TextField Numérico) --- */}
+          <Controller
+            name="wa"
+            control={control}
+            render={({ field, fieldState }) => (
+              <TextField
+                {...field}
+                label="Wrong Attempts (WAs)"
+                type="number"
+                fullWidth
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+                onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
+              />
+            )}
+          />
+
+          {/* --- Campo de Checkbox (neededHelp) --- */}
+          <Controller
+            name="neededHelp"
+            control={control}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    {...field}
+                    checked={field.value} // RHF controla o estado 'checked'
+                  />
+                }
+                label="Precisei de ajuda"
+              />
+            )}
+          />
+
+          <Button type="submit" variant="contained" size="large" disabled={isSubmitting}>
+            {isSubmitting ? 'Salvando...' : 'Salvar'}
+          </Button>
+
+        </Stack>
+      </Box>
     </FormProvider>
   );
 }

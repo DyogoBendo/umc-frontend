@@ -5,12 +5,15 @@ import type { Problem } from "../../../schemas/entities/problem";
 import { Controller, useFormContext } from "react-hook-form";
 
 export default function ProblemAutocomplete() {
-    const { control, watch } = useFormContext();
+    const { control, watch, setValue } = useFormContext();
     const [options, setOptions] = useState<Problem[]>([]);
     const [loading, setLoading] = useState(false);
+    const [inputValue, setInputValue] = useState("");
     const currentProblemSet = watch("problemSet");
 
     useEffect(() => {
+        setValue("problem", null, { shouldValidate: true });        
+        setInputValue("");
         const loadProblems = async () => {
             setLoading(true);            
             const problems = await problemService.getAll({"problemSetName": currentProblemSet?.name});
@@ -19,22 +22,32 @@ export default function ProblemAutocomplete() {
         };
 
         loadProblems();
-    }, [currentProblemSet]);    
+    }, [currentProblemSet, setValue]);    
 
   return (
     <Controller
       name="problem"
       control={control}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <Autocomplete
           freeSolo
+          key={currentProblemSet?.name || 'none'}
           options={options}
           loading={loading}
           value={field.value}
+          inputValue={inputValue}
+          onInputChange={(_, newInputValue, reason) => {                        
+                        if (reason === 'input') {
+                            setInputValue(newInputValue);
+                        }
+                        if (reason === 'clear') {
+                            setInputValue("");
+                        }
+                    }}
           blurOnSelect
           onBlur={(event) => {
             field.onBlur();
-            const textValue = (event.target as HTMLInputElement).value;
+            const textValue = inputValue;
             if (textValue && (!field.value || field.value.title !== textValue)) {
                             
               field.onChange({
@@ -45,16 +58,23 @@ export default function ProblemAutocomplete() {
             }
           }}
           onChange={(_, newValue) => {
-            console.log(typeof newValue)
-            if(typeof newValue === 'string'){
-                field.onChange({
-                    title: newValue,
-                    id: null,
-                    problemSet: currentProblemSet
-                })
-            } else{                
-                field.onChange(newValue)
-            }
+                if (typeof newValue === 'string') {
+                    // O usuário apertou Enter
+                    setInputValue(newValue); // Sincroniza o state
+                    field.onChange({
+                        title: newValue,
+                        id: null,
+                        problemSet: currentProblemSet
+                    });
+                } else if (newValue) {
+                    // O usuário selecionou um item
+                    setInputValue(newValue.title); // Sincroniza o state
+                    field.onChange(newValue);
+                } else {
+                    // O usuário limpou
+                    setInputValue(""); // Sincroniza o state
+                    field.onChange(null);
+                }
         }}
           getOptionLabel={(option) => {
             if (typeof option === "string") {
@@ -71,6 +91,8 @@ export default function ProblemAutocomplete() {
             <TextField
               {...params}
               label="Problem"
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
               InputProps={{
                 ...params.InputProps,
                 endAdornment: (

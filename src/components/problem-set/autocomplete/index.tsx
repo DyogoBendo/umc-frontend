@@ -24,7 +24,7 @@ export default function ProblemSetAutocomplete() {
     <Controller
       name="problemSet"
       control={control}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <Autocomplete
           freeSolo 
           options={options}
@@ -60,6 +60,8 @@ export default function ProblemSetAutocomplete() {
             <TextField
               {...params}
               label="Problem Set" // NOVO: Label
+              error={!!fieldState.error} // <--- MUDANÇA AQUI
+              helperText={fieldState.error?.message} // <--- MUDANÇA AQUI
               InputProps={{
                 ...params.InputProps,
                 endAdornment: (
