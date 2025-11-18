@@ -1,6 +1,5 @@
 import { Stack } from '@mui/material'
 import {AppHeader} from '../../components/ui/header'
-import {AppFooter} from '../../components/ui/footer'
 import { Outlet } from 'react-router'
 
 export function AppLayout() {
@@ -12,7 +11,7 @@ export function AppLayout() {
 						<Outlet />					
 				</Stack>
 
-				<AppFooter />
+
 			</Stack>		
 	)
 }

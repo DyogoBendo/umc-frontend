@@ -13,7 +13,7 @@ export default function ProblemsPage(){
         .then((data) => setProblems(data))
         .catch((error) => console.error('Error in fetching', error))
         .finally(() => setLoading(false))
-    })
+    }, [])
 
     if (loading) {
     return (

@@ -3,15 +3,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import dayjs from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { problemAttemptSchema } from "../../../schemas/entities/problemAttempt";
-import ProblemService from "../../../services/problemService";
-import PlatformService from "../../../services/platformService";
-import ProblemAutocomplete from "../../problem/autocomplete";
-import ProblemSetAutocomplete from "../../problem-set/autocomplete";
+import ProblemAutocomplete from "../../../components/problem/autocomplete";
+import ProblemSetAutocomplete from "../../../components/problem-set/autocomplete";
 import { problemAttemptFormSchema, type ProblemAttemptForm} from "../../../schemas/forms/problemAttemptForm";
-import PlatformAutocomplete from "../../platform/autocomplete";
+import PlatformAutocomplete from "../../../components/platform/autocomplete";
 import { Box, Stack, TextField, FormControlLabel, Checkbox, Button } from "@mui/material";
-import CompetitorAutocomplete from "../../competitor/autocomplete";
+import CompetitorAutocomplete from "../../../components/competitor/autocomplete";
 import problemAttemptService from "../../../services/problemAttemptService";
 import { useNavigate } from "react-router";
 
