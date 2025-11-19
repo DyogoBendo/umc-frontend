@@ -3,6 +3,7 @@ import { problemSchema } from '../entities/problem'
 import { competitorSchema } from '../entities/competitor'
 import { platformSchema } from '../entities/platform'
 import { problemSetSchema } from '../entities/problemSet'
+import { topicSchema } from '../entities/topic'
 
 export const problemAttemptFormSchema = z.object({    
     problem: problemSchema.nullable(),
@@ -12,8 +13,9 @@ export const problemAttemptFormSchema = z.object({
     link: z.string().optional(),
     time: z.number().optional(),
     wa: z.number().optional(),
-    neededHelp: z.boolean().optional(),
-    problemSet: problemSetSchema.nullable()
+    neededHelp: z.boolean(),
+    problemSet: problemSetSchema.nullable(),
+    topics: z.array(topicSchema)
 })
 
 export type ProblemAttemptForm = z.infer<typeof problemAttemptFormSchema>

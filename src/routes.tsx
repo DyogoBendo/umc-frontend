@@ -1,11 +1,12 @@
 import {createBrowserRouter, Navigate} from 'react-router'
 import ProblemsPage from "./pages/problems"
 import ProblemPage from './pages/problem';
-import ProblemSetsPage from './pages/problem-sets'
+import ProblemSetsPage from './pages/problem-sets/list'
 
 import { AppLayout } from './layout/app';
 import ProblemAttemptsPage from './pages/problem-attempts/list';
-import {ProblemAttemptFormComponent } from './pages/problem-attempts/create';
+import {ProblemAttemptCreatePage } from './pages/problem-attempts/create';
+import ProblemSetDetailPage from './pages/problem-sets/details';
 
 export const router = createBrowserRouter(
     [
@@ -37,6 +38,10 @@ export const router = createBrowserRouter(
                             index: true,
                             element: <ProblemSetsPage/>
                         },
+                        {
+                            path: ':problemSetId',
+                            element: <ProblemSetDetailPage/>
+                        }
                     ]
                 },
                 {
@@ -48,7 +53,7 @@ export const router = createBrowserRouter(
                         },
                         {
                             path: 'new',
-                            element: <ProblemAttemptFormComponent/>
+                            element: <ProblemAttemptCreatePage/>
                         }
                     ]
                 }

@@ -6,6 +6,10 @@ class ProblemSetService{
         const response = await umcAPI.get<ProblemSet[]>('/problem-set', {params, paramsSerializer: {indexes: null}});
         return response.data
     }
+    async getById(id: number): Promise<ProblemSet>{
+        const response = await umcAPI.get<ProblemSet>(`/problem-set/${id}`);
+        return response.data
+    }
 }
 
 export default new ProblemSetService();

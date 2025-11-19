@@ -11,8 +11,9 @@ import { Box, Stack, TextField, FormControlLabel, Checkbox, Button } from "@mui/
 import CompetitorAutocomplete from "../../../components/competitor/autocomplete";
 import problemAttemptService from "../../../services/problemAttemptService";
 import { useNavigate } from "react-router";
+import TopicAutocomplete from "../../../components/topic/autocomplete";
 
-export function ProblemAttemptFormComponent() {
+export function ProblemAttemptCreatePage() {
   const navigate = useNavigate()
 
   // Keep the entire form object instead of destructuring
@@ -28,6 +29,7 @@ export function ProblemAttemptFormComponent() {
       time: 0,
       wa: 0,
       neededHelp: false,
+      topics: []
     }
   });
 
@@ -67,6 +69,7 @@ export function ProblemAttemptFormComponent() {
           <PlatformAutocomplete />
           <ProblemSetAutocomplete />
           <ProblemAutocomplete />
+          <TopicAutocomplete />
 
           {/* --- Campo de Data (DatePicker) --- */}
           <Controller

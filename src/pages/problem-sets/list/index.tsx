@@ -1,7 +1,7 @@
 import { Container, Typography, CircularProgress } from '@mui/material';
-import ProblemSetTable from '../../components/problem-set/table';
-import problemSetService from '../../services/problemSetService';
-import type { ProblemSet } from '../../schemas/entities/problemSet';
+import ProblemSetTable from '../../../components/problem-set/table';
+import problemSetService from '../../../services/problemSetService';
+import type { ProblemSet } from '../../../schemas/entities/problemSet';
 import { useEffect, useState } from 'react';
 
 export default function ProblemSetsPage(){

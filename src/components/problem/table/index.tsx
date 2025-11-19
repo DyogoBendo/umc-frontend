@@ -20,7 +20,7 @@ export default function ProblemTable({problems}: TableProps) {
           {problems.map((problem) => (
             <TableRow key={problem.id}>
               <TableCell>{problem.title}</TableCell>
-              <TableCell>{problem.problemSet.name}</TableCell>              
+              <TableCell>{problem?.problemSet?.name}</TableCell>              
             </TableRow>
           ))}
         </TableBody>
