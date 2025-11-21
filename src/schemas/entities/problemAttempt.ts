@@ -2,6 +2,7 @@ import z from 'zod'
 import { problemSchema } from './problem'
 import { competitorSchema } from './competitor'
 import { platformSchema } from './platform'
+import { topicSchema } from './topic'
 
 export const problemAttemptSchema = z.object({
     id: z.number().optional(),    
@@ -12,7 +13,8 @@ export const problemAttemptSchema = z.object({
     link: z.string().optional(),
     time: z.number().optional(),
     wa: z.number().optional(),
-    neededHelp: z.boolean().optional()
+    neededHelp: z.boolean().optional(),
+    topics: z.array(topicSchema).default([])
 })
 
 export type ProblemAttempt = z.infer<typeof problemAttemptSchema>

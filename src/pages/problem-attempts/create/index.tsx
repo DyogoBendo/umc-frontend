@@ -51,7 +51,7 @@ export function ProblemAttemptCreatePage() {
     }
   };
 
-  const onError = (errorList: any) => {
+  const onError = (errorList: unknown) => {
     console.warn("Validação falhou:", errorList);
   };
 
