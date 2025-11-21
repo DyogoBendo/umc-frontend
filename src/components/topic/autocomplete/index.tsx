@@ -4,7 +4,11 @@ import { Controller, useFormContext } from "react-hook-form";
 import topicService from "../../../services/topicService";
 import type { Topic } from "../../../schemas/entities/topic";
 
-export default function TopicAutocomplete() {
+interface TopicAutocompleteProps {
+  name?: string;
+}
+
+export default function TopicAutocomplete({ name = "topics"}: TopicAutocompleteProps) {
   const { control } = useFormContext();
   const [options, setOptions] = useState<Topic[]>([]);
   const [loading, setLoading] = useState(false);
@@ -21,7 +25,7 @@ export default function TopicAutocomplete() {
 
   return (
     <Controller
-      name="topics" // O nome deve bater com o schema
+      name={name} // O nome deve bater com o schema
       control={control}
       render={({ field, fieldState }) => (
         <Autocomplete

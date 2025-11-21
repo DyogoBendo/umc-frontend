@@ -4,7 +4,10 @@ import { Autocomplete, TextField, CircularProgress } from "@mui/material";
 import { useState, useEffect } from "react";
 import problemSetService from "../../../services/problemSetService";
 
-export default function ProblemSetAutocomplete() {
+interface ProblemSetAutocompleteProps {
+    name: string; // Ex: "attempts.0.problemSet"
+}
+export default function ProblemSetAutocomplete({ name = "problemSet"}: ProblemSetAutocompleteProps) {
   // Pegue o control, assim como no outro componente
   const { control } = useFormContext();
   const [options, setOptions] = useState<ProblemSet[]>([]);
@@ -22,7 +25,7 @@ export default function ProblemSetAutocomplete() {
 
   return (
     <Controller
-      name="problemSet"
+      name={name}
       control={control}
       render={({ field, fieldState }) => (
         <Autocomplete
@@ -31,6 +34,7 @@ export default function ProblemSetAutocomplete() {
           loading={loading}
           value={field.value}
           blurOnSelect
+          isOptionEqualToValue={(option, value) => option.id === value.id}
           onBlur={(event) => {
             field.onBlur();
             const textValue = (event.target as HTMLInputElement).value;

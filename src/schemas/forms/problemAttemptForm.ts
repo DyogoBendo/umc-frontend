@@ -11,8 +11,8 @@ export const problemAttemptFormSchema = z.object({
     platform: platformSchema.nullable(),
     date: z.date().optional(),
     link: z.string().optional(),
-    time: z.number().optional(),
-    wa: z.number().optional(),
+    time: z.number().nullable(),
+    wa: z.number().nullable(),
     neededHelp: z.boolean(),
     problemSet: problemSetSchema.nullable(),
     topics: z.array(topicSchema)

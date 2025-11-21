@@ -7,6 +7,7 @@ import { AppLayout } from './layout/app';
 import ProblemAttemptsPage from './pages/problem-attempts/list';
 import {ProblemAttemptCreatePage } from './pages/problem-attempts/create';
 import ProblemSetDetailPage from './pages/problem-sets/details';
+import { ContestParticipationCreatePage } from './pages/contest-participation/create';
 
 export const router = createBrowserRouter(
     [
@@ -54,6 +55,15 @@ export const router = createBrowserRouter(
                         {
                             path: 'new',
                             element: <ProblemAttemptCreatePage/>
+                        }
+                    ]
+                },
+                {
+                    path: 'contest-participations',
+                    children: [
+                        {
+                            path: 'new',
+                            element: <ContestParticipationCreatePage />
                         }
                     ]
                 }

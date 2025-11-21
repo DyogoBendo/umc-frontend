@@ -34,10 +34,9 @@ export default function ContestAutocomplete() {
           onBlur={(event) => {
             field.onBlur();
             const textValue = (event.target as HTMLInputElement).value;
-            if (textValue && (!field.value || field.value.name !== textValue)) {      
+            if (textValue && (!field.value || field.value.title !== textValue)) {      
               field.onChange({
-                name: textValue,
-                link: null,
+                title: textValue,                
                 id: null,                
               });
             }
@@ -45,8 +44,7 @@ export default function ContestAutocomplete() {
           onChange={(_, newValue) => {
             if (typeof newValue === "string") {              
               field.onChange({
-                name: newValue,
-                link: null,
+                title: newValue,                
                 id: null,                
               });
             } else {
@@ -55,7 +53,7 @@ export default function ContestAutocomplete() {
           }}
           getOptionLabel={(option) => {
             if (typeof option === "string") return option;
-            if (option && option.name) return option.name;
+            if (option && option.title) return option.title;
             return "";
           }}
           renderInput={(params) => (

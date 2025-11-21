@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import dayjs from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import ProblemAutocomplete from "../../../components/problem/autocomplete";
+import ProblemAutocomplete from "../../../components/problem/autocomplete-byproblemset";
 import ProblemSetAutocomplete from "../../../components/problem-set/autocomplete";
 import { problemAttemptFormSchema, type ProblemAttemptForm} from "../../../schemas/forms/problemAttemptForm";
 import PlatformAutocomplete from "../../../components/platform/autocomplete";
@@ -67,7 +67,7 @@ export function ProblemAttemptCreatePage() {
           {/* Seus Autocompletes. (Veja a Seção 4!) */}          
           <CompetitorAutocomplete/>
           <PlatformAutocomplete />
-          <ProblemSetAutocomplete />
+          <ProblemSetAutocomplete name="problemSet"  />
           <ProblemAutocomplete />
           <TopicAutocomplete />
 
