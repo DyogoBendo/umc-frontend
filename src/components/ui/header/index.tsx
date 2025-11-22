@@ -92,6 +92,7 @@ export function AppHeader() {
             <NavDropdown label="Competitors" basePath="competitors" />
             <NavDropdown label="Problem Sets" basePath="problem-sets" />
             <NavDropdown label="Problem Attempts" basePath="problem-attempts" />
+            <NavDropdown label="Contests" basePath="contests" />
             <NavDropdown label="Contest Participations" basePath="contest-participations" />
           </Box>
 

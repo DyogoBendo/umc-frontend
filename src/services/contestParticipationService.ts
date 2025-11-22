@@ -12,6 +12,11 @@ class ContestParticipationService{
         const response = await umcAPI.post('/contest-participation', formData);        
         return response.data;
     }
+
+    async getById(id: number): Promise<ContestParticipation>{
+        const response = await umcAPI.get<ContestParticipation>(`/contest-participation/${id}`);
+        return response.data
+    }
 }
 
 export default new ContestParticipationService();

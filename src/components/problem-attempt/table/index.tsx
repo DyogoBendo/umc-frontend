@@ -1,4 +1,4 @@
-import {Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper,Link as MuiLink, IconButton, Tooltip, Chip, Stack} from '@mui/material';
+import {Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper,Link as MuiLink, IconButton, Tooltip, Chip, Stack, Rating} from '@mui/material';
 import type { ProblemAttempt } from '../../../schemas/entities/problemAttempt';
 import LaunchIcon from '@mui/icons-material/Launch'; // Ícone de link externo
 
@@ -29,6 +29,10 @@ export default function ProblemAttemptTable({problemAttempts}: TableProps) {
             <TableCell><strong>Time</strong></TableCell>
             <TableCell><strong>WA</strong></TableCell>
             <TableCell><strong>Needed help</strong></TableCell>
+            <TableCell><strong>Theory</strong></TableCell>
+            <TableCell><strong>Obs.</strong></TableCell>
+            <TableCell><strong>Impl.</strong></TableCell>
+            <TableCell><strong>General</strong></TableCell>
             <TableCell><strong>Link</strong></TableCell>
           </TableRow>
         </TableHead>
@@ -62,8 +66,31 @@ export default function ProblemAttemptTable({problemAttempts}: TableProps) {
               </TableCell>
               <TableCell>{problemAttempt.date ? new Date(problemAttempt.date).toLocaleDateString() : "-"}</TableCell>
               <TableCell>{problemAttempt.time ?? "-"}</TableCell>
-              <TableCell>{problemAttempt.wa ?? "-"}</TableCell>
+              <TableCell>{problemAttempt.wa ?? "-"}</TableCell> 
               <TableCell>{problemAttempt.neededHelp ? "Sim" : "Não"}</TableCell>
+              <TableCell>
+                {problemAttempt.theoryDifficulty !== null ? (
+                  <Rating value={problemAttempt.theoryDifficulty} readOnly size="small" max={5} />
+                ) : "-"}
+              </TableCell>
+
+              <TableCell>
+                {problemAttempt.observationDifficulty !== null ? (
+                  <Rating value={problemAttempt.observationDifficulty} readOnly size="small" max={5} />
+                ) : "-"}
+              </TableCell>
+
+              <TableCell>
+                {problemAttempt.implementationDifficulty !== null ? (
+                  <Rating value={problemAttempt.implementationDifficulty} readOnly size="small" max={5} />
+                ) : "-"}
+              </TableCell>
+
+              <TableCell>
+                {problemAttempt.generalDifficulty !== null ? (
+                  <Rating value={problemAttempt.generalDifficulty} readOnly size="small" max={5} />
+                ) : "-"}
+              </TableCell>             
               <TableCell> {/* Centralize para ficar bonito */}
                 {problemAttempt.link ? (
                   <Tooltip title={problemAttempt.link}>

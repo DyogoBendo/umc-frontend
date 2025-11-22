@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, FormProvider, useFieldArray, useForm, type FieldErrors } from "react-hook-form";
 import { contestParticipationFormSchema, type ContestParticipationForm } from "../../../schemas/forms/contestParticipationForm";
-import { Box, Paper, Typography, Grid, Stack, IconButton, Button, TextField, Checkbox, FormControlLabel } from "@mui/material";
+import { Box, Paper, Typography, Stack, IconButton, Button, TextField, Checkbox, FormControlLabel, Grid, Rating } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import PlatformAutocomplete from "../../../components/platform/autocomplete";
@@ -14,6 +14,9 @@ import AddIcon from '@mui/icons-material/Add';
 import TeamAutocomplete from "../../../components/competitor/team-autocomplete";
 import contestParticipationService from "../../../services/contestParticipationService";
 import { useNavigate } from "react-router";
+import { useEffect } from "react";
+import contestProblemService from "../../../services/contestProblemService";
+import type { ProblemAttemptForm } from "../../../schemas/forms/problemAttemptForm";
 
 export function ContestParticipationCreatePage(){
     const navigate = useNavigate()
@@ -28,11 +31,78 @@ export function ContestParticipationCreatePage(){
         problemAttempts: [] // Começa vazio ou com um item inicial
         }    
     });
-    const { control, handleSubmit, formState: { isSubmitting, errors } } = form;
-    const { fields, append, remove } = useFieldArray({
+    const { control, watch, handleSubmit, formState: { isSubmitting,  } } = form;
+    const { fields, append, remove, replace } = useFieldArray({
         control,
-        name: "problemAttempts" // Nome do campo array no schema    
+        name: "problemAttempts"
+
     });
+
+    const difficultyFields: { 
+        name: keyof ProblemAttemptForm; // Isso diz: "Só aceito chaves válidas do formulário"
+        label: string; 
+    }[] = [
+        { name: 'theoryDifficulty', label: 'Teoria' },
+        { name: 'observationDifficulty', label: 'Observação' },
+        { name: 'implementationDifficulty', label: 'Implementação' },
+        { name: 'generalDifficulty', label: 'Geral' },
+    ];
+
+
+    // 2. Observe o campo 'contest'
+    const selectedContest = watch("contest");
+
+    useEffect(() => {
+        const fetchContestProblems = async () => {
+            // Caso A: O usuário limpou o campo ou digitou um texto novo (string)
+            if (!selectedContest || selectedContest.id === null) {
+                // Opção: Limpar a lista de problemas para começar do zero
+                replace([]); 
+                return;
+            }
+
+            // Caso B: É um objeto Contest válido (tem ID)
+            if (selectedContest.id) {
+                try {
+                    // Busca os problemas vinculados a esse contest
+                    const contestProblems = await contestProblemService.getAll({ contestId: selectedContest.id });
+                    
+                    // Ordena (opcional, mas recomendado)
+                    const sortedProblems = contestProblems.sort((a, b) => Number(a.position) - Number(b.position));
+
+                    // Mapeia para o formato do seu formulário (ProblemAttemptForm)
+                    const newAttempts = sortedProblems.map(cp => ({
+                        // Preenche os dados que vêm do banco
+                        problem: cp.problem,
+                        problemSet: cp.problem?.problemSet || null, 
+                        
+                        // Inicializa o resto com valores padrão
+                        topics: [],
+                        platform: null, 
+                        competitor: null,
+                        neededHelp: false,
+                        wa: 0,
+                        time: 0,
+                        theoryDifficulty: 0,
+                        observationDifficulty: 0,
+                        implementationDifficulty: 0,
+                        generalDifficulty: 0,
+                    }));
+
+                    // SUBSTITUI a lista atual pela nova lista
+                    replace(newAttempts);
+
+                } catch (error) {
+                    console.error("Erro ao buscar problemas do contest:", error);
+                    // Em caso de erro, talvez não queira limpar, ou queira avisar
+                }
+            }
+        };
+
+        fetchContestProblems();
+
+    }, [selectedContest, replace]); // Executa sempre que o contest mudar
+
     const onSubmit = async (data: ContestParticipationForm) => {
         try {      
               console.log(data);
@@ -62,7 +132,17 @@ export function ContestParticipationCreatePage(){
 
     return (
         <FormProvider {...form}>
-        <Box component="form" onSubmit={handleSubmit(onSubmit, onError)} sx={{ width: '80%', maxWidth: 1200, mx: 'auto', mt: 4 }} >            
+        <Box 
+            component="form" 
+            onSubmit={handleSubmit(onSubmit, onError)} 
+            sx={{ width: '80%', maxWidth: 1200, mx: 'auto', mt: 4 }} 
+            onKeyDown={(e) => {
+                // Verifica se a tecla é Enter
+                if (e.key === "Enter") {
+                // Impede o comportamento padrão (que seria enviar o form)
+                e.preventDefault();
+                }
+            }}>            
                 
             {/* --- CABEÇALHO DO CONTEST --- */}
             <Stack spacing={2.5}>
@@ -176,6 +256,7 @@ export function ContestParticipationCreatePage(){
                                         )}
                                     />
                                 </Box>
+                                
                                 <Controller
                                     name={`problemAttempts.${index}.neededHelp`}
                                     control={control}
@@ -192,6 +273,39 @@ export function ContestParticipationCreatePage(){
                                     )}
                                 />
                             </Stack>
+                            {/* --- NOVA SEÇÃO: DIFICULDADES --- */}
+                            <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 1, p: 2 }}>
+                                <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
+                                Avaliação de Dificuldade (0-5)
+                                </Typography>
+                                
+                            <Grid container spacing={2}>
+                                {/* Agora fazemos o map na variável tipada */}
+                                {difficultyFields.map((item) => (
+                                    <Grid size={{ xs: 6 }} key={item.name}>
+                                    <Controller
+                                        name={`problemAttempts.${index}.${item.name}`}
+                                        control={control}
+                                        render={({ field }) => (
+                                        <Box display="flex" flexDirection="column">
+                                            <Typography component="legend" variant="caption">
+                                            {item.label}
+                                            </Typography>
+                                            <Rating
+                                            name={`problemAttempts.${index}.${item.name}`}
+                                            value={Number(field.value) || 0} // Converte null para 0 visualmente
+                                            onChange={(_, newValue) => {
+                                                field.onChange(newValue); // newValue pode ser null (se limpar) ou number
+                                            }}
+                                            />
+                                        </Box>
+                                        )}
+                                    />
+                                    </Grid>
+                                ))}
+                                </Grid>
+                            </Box>
+
                             <TopicAutocomplete name={`problemAttempts.${index}.topics`} />        
                         </Stack>
                     </Paper>
@@ -211,7 +325,11 @@ export function ContestParticipationCreatePage(){
                     competitor: null, // Se tiver
                     neededHelp: false,
                     wa: 0,
-                    time: 0
+                    time: 0,
+                    theoryDifficulty: 0,
+                    observationDifficulty: 0,
+                    implementationDifficulty: 0,
+                    generalDifficulty: 0,
                 })}
                 sx={{ mt: 3, mb: 5, width: '100%', borderStyle: 'dashed' }}
             >

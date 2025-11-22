@@ -7,7 +7,7 @@ import ProblemAutocomplete from "../../../components/problem/autocomplete-byprob
 import ProblemSetAutocomplete from "../../../components/problem-set/autocomplete";
 import { problemAttemptFormSchema, type ProblemAttemptForm} from "../../../schemas/forms/problemAttemptForm";
 import PlatformAutocomplete from "../../../components/platform/autocomplete";
-import { Box, Stack, TextField, FormControlLabel, Checkbox, Button } from "@mui/material";
+import { Box, Stack, TextField, FormControlLabel, Checkbox, Button, Rating, Grid, Typography} from "@mui/material";
 import CompetitorAutocomplete from "../../../components/competitor/autocomplete";
 import problemAttemptService from "../../../services/problemAttemptService";
 import { useNavigate } from "react-router";
@@ -15,6 +15,16 @@ import TopicAutocomplete from "../../../components/topic/autocomplete";
 
 export function ProblemAttemptCreatePage() {
   const navigate = useNavigate()
+
+  const difficultyFields: { 
+    name: keyof ProblemAttemptForm; // Isso diz: "Só aceito chaves válidas do formulário"
+    label: string; 
+  }[] = [
+    { name: 'theoryDifficulty', label: 'Teoria' },
+    { name: 'observationDifficulty', label: 'Observação' },
+    { name: 'implementationDifficulty', label: 'Implementação' },
+    { name: 'generalDifficulty', label: 'Geral' },
+  ];
 
   // Keep the entire form object instead of destructuring
   const form = useForm<ProblemAttemptForm>({
@@ -29,7 +39,11 @@ export function ProblemAttemptCreatePage() {
       time: 0,
       wa: 0,
       neededHelp: false,
-      topics: []
+      topics: [],
+      theoryDifficulty: 0,
+      observationDifficulty: 0,
+      implementationDifficulty: 0,
+      generalDifficulty: 0,
     }
   });
 
@@ -144,6 +158,39 @@ export function ProblemAttemptCreatePage() {
               />
             )}
           />
+
+          {/* --- NOVA SEÇÃO: DIFICULDADES --- */}
+          <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 1, p: 2 }}>
+            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
+              Avaliação de Dificuldade (0-5)
+            </Typography>
+            
+           <Grid container spacing={2}>
+            {/* Agora fazemos o map na variável tipada */}
+            {difficultyFields.map((item) => (
+                <Grid size={{ xs: 6 }} key={item.name}>
+                  <Controller
+                    name={item.name}
+                    control={control}
+                    render={({ field }) => (
+                      <Box display="flex" flexDirection="column">
+                        <Typography component="legend" variant="caption">
+                          {item.label}
+                        </Typography>
+                        <Rating
+                          name={item.name}
+                          value={Number(field.value) || 0} // Converte null para 0 visualmente
+                          onChange={(_, newValue) => {
+                            field.onChange(newValue); // newValue pode ser null (se limpar) ou number
+                          }}
+                        />
+                      </Box>
+                    )}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
 
           {/* --- Campo de Checkbox (neededHelp) --- */}
           <Controller

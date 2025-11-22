@@ -14,7 +14,11 @@ export const problemAttemptSchema = z.object({
     time: z.number().optional(),
     wa: z.number().optional(),
     neededHelp: z.boolean().optional(),
-    topics: z.array(topicSchema).default([])
+    topics: z.array(topicSchema).default([]),
+    theoryDifficulty: z.number().nullable(),
+    observationDifficulty: z.number().nullable(),
+    implementationDifficulty: z.number().nullable(),
+    generalDifficulty: z.number().nullable(),
 })
 
 export type ProblemAttempt = z.infer<typeof problemAttemptSchema>

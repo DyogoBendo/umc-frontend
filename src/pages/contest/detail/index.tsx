@@ -1,27 +1,33 @@
 import { Container, Typography, CircularProgress } from '@mui/material';
-import problemSetService from '../../../services/problemSetService';
-import type { ProblemSet } from '../../../schemas/entities/problemSet';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import type { Problem } from '../../../schemas/entities/problem';
 import ProblemTable from '../../../components/problem/table';
-import problemService from '../../../services/problemService';
+import type { Contest } from '../../../schemas/entities/contest';
+import contestService from '../../../services/contestService';
+import contestProblemService from '../../../services/contestProblemService';
 
-export default function ProblemSetDetailPage(){
-    const { problemSetId } = useParams();
-    const [problemSet, setProblemSet] = useState<ProblemSet>();
+export default function ContestDetailPage(){
+    const { contestId } = useParams();
+    const [contest, setContest] = useState<Contest>();
     const [problems, setProblems] = useState<Problem[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        problemSetService.getById(Number(problemSetId))
-        .then((data) => setProblemSet(data))
+        contestService.getById(Number(contestId))
+        .then((data) => setContest(data))
         .catch((error) => console.error('Error in fetching', error))
         .finally(() => setLoading(false))
         
-        console.log(problemSet)
-        problemService.getAll({"problemSetId": Number(problemSetId)})
-        .then((data) => setProblems(data))
+        console.log(contest)
+        contestProblemService.getAll({"contestId": Number(contestId)})
+        .then((data) => {
+            const sortedData = data.sort((a, b) => a.position - b.position);
+            // 2. Extrai apenas o problema
+            const extractedProblems = sortedData.map((cp) => cp.problem);
+            
+            setProblems(extractedProblems);
+        })
         .catch((error) => console.error('Error in fetching', error))
         .finally(() => setLoading(false))
 
@@ -38,7 +44,7 @@ export default function ProblemSetDetailPage(){
     return (
             <Container>
                 <Typography variant="h4" align="center" sx={{ mt: 4, mb: 2 }}>
-                    {problemSet?.name ?? "Sem nome" }
+                    {contest?.title ?? "Sem título" }
                 </Typography>           
                 <ProblemTable problems={problems} />     
             </Container>

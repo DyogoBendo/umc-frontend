@@ -15,7 +15,11 @@ export const problemAttemptFormSchema = z.object({
     wa: z.number().nullable(),
     neededHelp: z.boolean(),
     problemSet: problemSetSchema.nullable(),
-    topics: z.array(topicSchema)
+    topics: z.array(topicSchema),
+    theoryDifficulty: z.number().nullable(),
+    observationDifficulty: z.number().nullable(),
+    implementationDifficulty: z.number().nullable(),
+    generalDifficulty: z.number().nullable(),
 })
 
 export type ProblemAttemptForm = z.infer<typeof problemAttemptFormSchema>

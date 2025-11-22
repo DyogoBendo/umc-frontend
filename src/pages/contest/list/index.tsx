@@ -1,19 +1,19 @@
 import { Container, Typography, CircularProgress } from '@mui/material';
-import ProblemSetTable from '../../../components/problem-set/table';
-import problemSetService from '../../../services/problemSetService';
-import type { ProblemSet } from '../../../schemas/entities/problemSet';
 import { useEffect, useState } from 'react';
+import type { Contest } from '../../../schemas/entities/contest';
+import contestService from '../../../services/contestService';
+import ContestsTable from '../../../components/contest/table';
 
-export default function ProblemSetsPage(){
-    const [problemSet, setProblemSet] = useState<ProblemSet[]>([]);
+export default function ContestsPage(){
+    const [contests, setContests] = useState<Contest[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        problemSetService.getAll()
-        .then((data) => setProblemSet(data))
+        contestService.getAll()
+        .then((data) => setContests(data))
         .catch((error) => console.error('Error in fetching', error))
         .finally(() => setLoading(false))
-    }, [])
+    })
 
     if (loading) {
     return (
@@ -26,9 +26,9 @@ export default function ProblemSetsPage(){
     return (
             <Container>
                 <Typography variant="h4" align="center" sx={{ mt: 4, mb: 2 }}>
-                    Lista de conjuntos de questões
+                    Lista de provas
                 </Typography>
-                <ProblemSetTable  problemSets={problemSet}/>
+                <ContestsTable  contests={contests}/>
             </Container>
     )
 }

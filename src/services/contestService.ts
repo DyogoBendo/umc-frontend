@@ -6,6 +6,11 @@ class ContestService{
         const response = await umcAPI.get<Contest[]>('/contest', {params, paramsSerializer: {indexes: null}});
         return response.data
     }
+
+    async getById(id: number): Promise<Contest>{
+        const response = await umcAPI.get<Contest>(`/contest/${id}`);
+        return response.data
+    }
 }
 
 export default new ContestService();
