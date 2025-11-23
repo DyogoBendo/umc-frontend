@@ -8,12 +8,14 @@ import ProblemSetAutocomplete from "../../../components/problem-set/autocomplete
 import { problemAttemptFormSchema, type ProblemAttemptForm} from "../../../schemas/forms/problemAttemptForm";
 import PlatformAutocomplete from "../../../components/platform/autocomplete";
 import { Box, Stack, TextField, FormControlLabel, Checkbox, Button, Rating, Grid, Typography} from "@mui/material";
-import CompetitorAutocomplete from "../../../components/competitor/autocomplete";
 import problemAttemptService from "../../../services/problemAttemptService";
 import { useNavigate } from "react-router";
 import TopicAutocomplete from "../../../components/topic/autocomplete";
+import { useAuth } from "../../../hooks/AuthContexts";
+import EntryTypeAutocomplete from "../../../components/entry-type/autocomplete";
 
 export function ProblemAttemptCreatePage() {
+  const { competitor } = useAuth();
   const navigate = useNavigate()
 
   const difficultyFields: { 
@@ -31,7 +33,7 @@ export function ProblemAttemptCreatePage() {
     resolver: zodResolver(problemAttemptFormSchema),
     defaultValues: {
       problem: null,      
-      competitor: null,     
+      competitor: competitor,     
       problemSet: null, 
       platform: null,
       date: new Date(),
@@ -44,6 +46,7 @@ export function ProblemAttemptCreatePage() {
       observationDifficulty: 0,
       implementationDifficulty: 0,
       generalDifficulty: 0,
+      entryType: null
     }
   });
 
@@ -51,9 +54,8 @@ export function ProblemAttemptCreatePage() {
   const { control, handleSubmit, formState: { isSubmitting } } = form;
 
   const onSubmit = async (data: ProblemAttemptForm) => {         
-    try {      
-      console.log(data);
-      // Se não temos ID, estamos criando
+    try {          
+      // Se não temos ID, estamos criando      
       await problemAttemptService.create(data);
       console.log("Tentativa criada com sucesso!");
       navigate('/problem-attempts')
@@ -65,7 +67,8 @@ export function ProblemAttemptCreatePage() {
     }
   };
 
-  const onError = (errorList: unknown) => {
+  const onError = (errorList: unknown) => {    
+    console.log(form)
     console.warn("Validação falhou:", errorList);
   };
 
@@ -78,9 +81,9 @@ export function ProblemAttemptCreatePage() {
       >
         <Stack spacing={2.5}> {/* Define o espaçamento vertical */}
 
-          {/* Seus Autocompletes. (Veja a Seção 4!) */}          
-          <CompetitorAutocomplete/>
+          {/* Seus Autocompletes. (Veja a Seção 4!) */}                    
           <PlatformAutocomplete />
+          <EntryTypeAutocomplete />
           <ProblemSetAutocomplete name="problemSet"  />
           <ProblemAutocomplete />
           <TopicAutocomplete />

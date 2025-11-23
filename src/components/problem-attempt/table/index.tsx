@@ -24,6 +24,7 @@ export default function ProblemAttemptTable({problemAttempts}: TableProps) {
             <TableCell><strong>Problem set origin</strong></TableCell>            
             <TableCell><strong>Competitor</strong></TableCell>
             <TableCell><strong>Platform</strong></TableCell>
+            <TableCell><strong>Tipo</strong></TableCell>
             <TableCell><strong>Topics</strong></TableCell>
             <TableCell><strong>Date</strong></TableCell>
             <TableCell><strong>Time</strong></TableCell>
@@ -43,6 +44,7 @@ export default function ProblemAttemptTable({problemAttempts}: TableProps) {
               <TableCell>{problemAttempt?.problem?.problemSet?.name ?? "-"}</TableCell>              
               <TableCell>{problemAttempt?.competitor?.name ?? "-"}</TableCell>
               <TableCell>{problemAttempt?.platform?.name ?? "-"}</TableCell>
+              <TableCell>{problemAttempt?.entryType?.name ?? "-"}</TableCell>
               <TableCell>
                 {problemAttempt.topics && problemAttempt.topics.length > 0 ? (
                   <Stack 

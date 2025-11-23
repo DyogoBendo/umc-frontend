@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { AppBar, Toolbar, Typography, Button, Menu, MenuItem, Box, Container } from '@mui/material';
 import { Link as RouterLink } from 'react-router';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { useAuth } from '../../../hooks/AuthContexts';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 // --- Sub-componente para os Botões com Dropdown ---
 interface NavDropdownProps {
@@ -65,6 +67,7 @@ function NavDropdown({ label, basePath }: NavDropdownProps) {
 }
 
 export function AppHeader() {
+  const { signOut } = useAuth();
 	return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -94,10 +97,23 @@ export function AppHeader() {
             <NavDropdown label="Problem Attempts" basePath="problem-attempts" />
             <NavDropdown label="Contests" basePath="contests" />
             <NavDropdown label="Contest Participations" basePath="contest-participations" />
+            <NavDropdown label="Entry types" basePath="entry-types" />
           </Box>
 
           {/* Botão de Logout ou Perfil (Opcional) */}
-          <Button color="inherit">Login</Button>
+          <Button 
+          color="inherit" 
+          onClick={ () => {
+              try {
+                signOut();
+              } catch (error) {
+                  console.log(error)
+                  alert("Usuário ou senha inválidos");
+              }
+            }
+          }>
+            <LogoutIcon/>
+          </Button>
           
         </Toolbar>
       </Container>

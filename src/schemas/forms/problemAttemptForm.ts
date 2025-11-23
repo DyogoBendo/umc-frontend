@@ -4,6 +4,7 @@ import { competitorSchema } from '../entities/competitor'
 import { platformSchema } from '../entities/platform'
 import { problemSetSchema } from '../entities/problemSet'
 import { topicSchema } from '../entities/topic'
+import { entryTypeSchema } from '../entities/entryType'
 
 export const problemAttemptFormSchema = z.object({    
     problem: problemSchema.nullable(),
@@ -20,6 +21,7 @@ export const problemAttemptFormSchema = z.object({
     observationDifficulty: z.number().nullable(),
     implementationDifficulty: z.number().nullable(),
     generalDifficulty: z.number().nullable(),
+    entryType: entryTypeSchema.nullable()
 })
 
 export type ProblemAttemptForm = z.infer<typeof problemAttemptFormSchema>

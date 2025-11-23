@@ -3,6 +3,7 @@ import { problemSchema } from './problem'
 import { competitorSchema } from './competitor'
 import { platformSchema } from './platform'
 import { topicSchema } from './topic'
+import { entryTypeSchema } from './entryType'
 
 export const problemAttemptSchema = z.object({
     id: z.number().optional(),    
@@ -19,6 +20,7 @@ export const problemAttemptSchema = z.object({
     observationDifficulty: z.number().nullable(),
     implementationDifficulty: z.number().nullable(),
     generalDifficulty: z.number().nullable(),
+    entryType: entryTypeSchema.nullable()
 })
 
 export type ProblemAttempt = z.infer<typeof problemAttemptSchema>

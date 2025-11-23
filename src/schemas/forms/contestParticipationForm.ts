@@ -3,6 +3,7 @@ import { competitorSchema } from '../entities/competitor'
 import { platformSchema } from '../entities/platform'
 import { contestSchema } from '../entities/contest'
 import { problemAttemptFormSchema } from './problemAttemptForm'
+import { entryTypeSchema } from '../entities/entryType'
 
 export const contestParticipationFormSchema = z.object({    
     contest: contestSchema.nullable(),
@@ -10,7 +11,8 @@ export const contestParticipationFormSchema = z.object({
     platform: platformSchema.nullable(),
     date: z.date().optional(),
     link: z.string().optional(),
-    problemAttempts: z.array(problemAttemptFormSchema)
+    problemAttempts: z.array(problemAttemptFormSchema),
+    entryType: entryTypeSchema.nullable()
 })
 
 export type ContestParticipationForm = z.infer<typeof contestParticipationFormSchema>

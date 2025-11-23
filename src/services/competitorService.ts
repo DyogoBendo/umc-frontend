@@ -1,4 +1,4 @@
-import { umcAPI } from "../config/api";
+    import { umcAPI } from "../config/api";
 import type { Competitor } from "../schemas/entities/competitor";
 
 class CompetitorService{

@@ -7,4 +7,15 @@ export const umcAPI = axios.create({
 		'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
 		'Access-Control-Expose-Headers': '*',
 	},
-})
+});
+
+umcAPI.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token');
+  
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  
+  return config;
+});
+

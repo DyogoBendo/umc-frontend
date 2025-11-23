@@ -19,6 +19,7 @@ export default function ContestParticipationTable({contestParticipations}: Table
             <TableCell><strong>Time</strong></TableCell>            
             <TableCell><strong>Data</strong></TableCell>            
             <TableCell><strong>Plataforma</strong></TableCell>            
+            <TableCell><strong>Tipo</strong></TableCell>            
             <TableCell><strong>Link</strong></TableCell>            
           </TableRow>
         </TableHead>
@@ -52,15 +53,16 @@ export default function ContestParticipationTable({contestParticipations}: Table
                 ) : "-"}
               </TableCell>
 
-              {/* 3. PLATAFORMA */}
-              <TableCell>{contestParticipation?.platform?.name ?? "-"}</TableCell>              
-
               {/* 4. DATA */}
               <TableCell>
                 {contestParticipation.date 
                   ? new Date(contestParticipation.date).toLocaleDateString() 
                   : "-"}
               </TableCell>  
+
+              {/* 3. PLATAFORMA */}
+              <TableCell>{contestParticipation?.platform?.name ?? "-"}</TableCell>              
+              <TableCell>{contestParticipation?.entryType?.name ?? "-"}</TableCell>              
 
               {/* 5. LINK */}
               <TableCell onClick={(e) => e.stopPropagation()}> 

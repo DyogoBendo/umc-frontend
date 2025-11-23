@@ -17,6 +17,7 @@ import { useNavigate } from "react-router";
 import { useEffect } from "react";
 import contestProblemService from "../../../services/contestProblemService";
 import type { ProblemAttemptForm } from "../../../schemas/forms/problemAttemptForm";
+import EntryTypeAutocomplete from "../../../components/entry-type/autocomplete";
 
 export function ContestParticipationCreatePage(){
     const navigate = useNavigate()
@@ -87,6 +88,7 @@ export function ContestParticipationCreatePage(){
                         observationDifficulty: 0,
                         implementationDifficulty: 0,
                         generalDifficulty: 0,
+                        entryType: null
                     }));
 
                     // SUBSTITUI a lista atual pela nova lista
@@ -146,11 +148,11 @@ export function ContestParticipationCreatePage(){
                 
             {/* --- CABEÇALHO DO CONTEST --- */}
             <Stack spacing={2.5}>
-                <Typography variant="h6" gutterBottom>Dados do Contest</Typography>
-                           
+                <Typography variant="h6" gutterBottom>Dados do Contest</Typography>                                        
                     <ContestAutocomplete/>                                    
                     <PlatformAutocomplete />                    
                     <TeamAutocomplete />
+                    <EntryTypeAutocomplete isFromContest={true} />
                 
                     <Controller
                         name="date"
@@ -330,6 +332,7 @@ export function ContestParticipationCreatePage(){
                     observationDifficulty: 0,
                     implementationDifficulty: 0,
                     generalDifficulty: 0,
+                    entryType: null
                 })}
                 sx={{ mt: 3, mb: 5, width: '100%', borderStyle: 'dashed' }}
             >
