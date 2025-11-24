@@ -57,7 +57,7 @@ export function CompetitionCreatePage() {
   const onSubmit = async (data: CompetitionForm) => {
     console.log("Competition:", data);
     await competitionService.create(data);
-    navigate('/problem-attempts')
+    navigate('/competitions')
   };
 
   return (

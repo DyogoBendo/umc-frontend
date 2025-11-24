@@ -19,6 +19,7 @@ import { EntryTypeCreatePage } from './pages/entry-type/create';
 import { CompetitionCreatePage } from './pages/competition/create';
 import CompetitionsPage from './pages/competition/list';
 import CompetitionDetailPage from './pages/competition/detail';
+import RegisterPage from './pages/auth/register';
 
 export const router = createBrowserRouter([
     {
@@ -30,6 +31,10 @@ export const router = createBrowserRouter([
             { 
                 path: "/login", 
                 element: <LoginPage /> 
+            },
+            {
+                path: "/register",
+                element: <RegisterPage />
             },
 
             // ROTAS PRIVADAS

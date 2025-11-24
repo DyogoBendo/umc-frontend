@@ -4,6 +4,12 @@ import type { Competition } from "../schemas/entities/competition";
 import type { CompetitionForm } from "../schemas/forms/competitionForm";
 
 class CompetitionService{
+    async join(id: number): Promise<void> {
+      await umcAPI.post<CompetitionDetailed>(`/competition/${id}/join`);
+    }
+    async leave(id: number): Promise<void>{
+      await umcAPI.post<CompetitionDetailed>(`/competition/${id}/leave`);
+    }
     async getById(id: number): Promise<CompetitionDetailed>{
         const response = await umcAPI.get<CompetitionDetailed>(`/competition/${id}`);
         return response.data

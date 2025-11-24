@@ -2,35 +2,68 @@ import { useEffect, useState } from "react";
 import { useParams} from "react-router";
 import { 
   Container, Grid, Paper, Typography, Box, Stack, Divider, 
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Avatar 
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Avatar,
+  Button,
+  CircularProgress
 } from "@mui/material";
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import dayjs from "dayjs";
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 // --- SEUS TIPOS ---
 import competitionService from "../../../services/competitionService";
 import type { CompetitionDetailed } from "../../../schemas/dto/competitionDetailed";
+import { useAuth } from "../../../hooks/AuthContexts";
 // import competitionService from "../../services/competitionService";
 
 // Tipos auxiliares para este exemplo (substitua pelos seus reais)
 
 export default function CompetitionDetailPage() {    
   const { competitionId } = useParams();  
+  const { competitor } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [joining, setJoining] = useState(false);
 
   // Estados para os dados
   const [competition, setCompetition] = useState<CompetitionDetailed | null>(null);  
 
-  // Simulando busca de dados (Substitua pelos seus services reais)
-  useEffect(() => {    
+  const fetchCompetition = () => {
     competitionService.getById(Number(competitionId))
-    .then((data) => setCompetition(data))
-    .catch((error) => console.error('Error in fetching', error))
-    .finally(() => setLoading(false))   
+      .then((data) => setCompetition(data))
+      .catch((error) => console.error('Error in fetching', error))
+      .finally(() => setLoading(false));
+  }
 
-  }, [competitionId]);
+  const isParticipating = competition?.rank.some(
+    r => r.competitor.id === competitor?.id
+  );
+
+  // Simulando busca de dados (Substitua pelos seus services reais)
+  useEffect(() => {fetchCompetition()}, [competitionId]);
+
+  const handleToggleParticipation = async () => {
+    if (!competition) return;
+    setJoining(true);
+    try {
+      if (isParticipating) {
+        // Chama API para SAIR
+        await competitionService.leave(competition.id!); // Assumindo método leave
+      } else {
+        // Chama API para ENTRAR
+        await competitionService.join(competition.id!); // Assumindo método join
+      }
+      // Recarrega os dados para atualizar a tabela e o botão
+      fetchCompetition();
+    } catch (error) {
+      console.error("Erro ao alterar participação", error);
+      alert("Erro ao realizar ação. Tente novamente.");
+    } finally {
+      setJoining(false);
+    }
+  };
 
   if (loading || !competition) return <Typography sx={{p:4}}>Carregando...</Typography>;
 
@@ -45,12 +78,31 @@ export default function CompetitionDetailPage() {
             
             {/* BOX 1: DETALHES DA COMPETIÇÃO */}
             <Paper sx={{ p: 3, borderTop: '4px solid #1976d2' }}>
-              <Typography variant="h4" fontWeight="bold" gutterBottom>
-                {competition.name}
-              </Typography>
+              
+              {/* CABEÇALHO DO BOX: Título + Botão de Ação */}
+              <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
+                <Typography variant="h4" fontWeight="bold" gutterBottom>
+                  {competition.name}
+                </Typography>
+
+                {/* BOTÃO DE ENTRAR/SAIR */}
+                {/* Só mostra se a competição estiver ativa (opcional) */}
+                {dayjs().isBefore(competition.endDate) && (
+                  <Button
+                    variant={isParticipating ? "outlined" : "contained"}
+                    color={isParticipating ? "error" : "primary"}
+                    startIcon={joining ? <CircularProgress size={20} /> : (isParticipating ? <LogoutIcon /> : <LoginIcon />)}
+                    onClick={handleToggleParticipation}
+                    disabled={joining}
+                  >
+                    {joining ? "Processando..." : (isParticipating ? "Sair da Competição" : "Participar")}
+                  </Button>
+                )}
+              </Stack>
               
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={4} mt={2}>
-                <Box display="flex" alignItems="center" gap={1}>
+                 {/* ... (Datas e Status igual ao seu código) ... */}
+                 <Box display="flex" alignItems="center" gap={1}>
                   <CalendarTodayIcon color="action" />
                   <Box>
                     <Typography variant="caption" display="block" color="text.secondary">Início</Typography>
@@ -71,7 +123,6 @@ export default function CompetitionDetailPage() {
                 </Box>
 
                 <Box display="flex" alignItems="center" gap={1}>
-                   {/* Status calculado dinamicamente */}
                    <Chip 
                       label={dayjs().isAfter(competition.endDate) ? "Finalizada" : "Em Andamento"} 
                       color={dayjs().isAfter(competition.endDate) ? "default" : "success"}
@@ -104,7 +155,7 @@ export default function CompetitionDetailPage() {
                     {competition.rank.map((row, index) => (
                       <TableRow key={row.competitor.id} hover>
                         <TableCell align="center">
-                          {index === 1 ? '🥇' : index === 2 ? '🥈' : index === 3 ? '🥉' : index}
+                          {index+1 === 1 ? '🥇' : index+1 === 2 ? '🥈' : index+1 === 3 ? '🥉' : index+1}
                         </TableCell>
                         <TableCell>
                           <Stack direction="row" spacing={1} alignItems="center">
