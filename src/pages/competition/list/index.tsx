@@ -1,16 +1,16 @@
 import { Container, Typography, CircularProgress } from '@mui/material';
-import ProblemTable from '../../components/problem/table'
-import problemService from '../../services/problemService';
-import type { Problem } from '../../schemas/entities/problem';
 import { useEffect, useState } from 'react';
+import competitionService from '../../../services/competitionService';
+import type { Competition } from '../../../schemas/entities/competition';
+import CompetitionsTable from '../../../components/competition/table';
 
-export default function ProblemsPage(){
-    const [problems, setProblems] = useState<Problem[]>([]);
+export default function CompetitionsPage(){
+    const [competitions, setCompetitions] = useState<Competition[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        problemService.getAll()
-        .then((data) => setProblems(data))
+        competitionService.getAll()
+        .then((data) => setCompetitions(data))
         .catch((error) => console.error('Error in fetching', error))
         .finally(() => setLoading(false))
     }, [])
@@ -26,9 +26,9 @@ export default function ProblemsPage(){
     return (
             <Container>
                 <Typography variant="h4" align="center" sx={{ mt: 4, mb: 2 }}>
-                    Lista de problemas
+                    Lista de competições
                 </Typography>
-                <ProblemTable  problems={problems}/>
+                <CompetitionsTable  competitions={competitions}/>
             </Container>
     )
 }

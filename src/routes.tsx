@@ -1,6 +1,5 @@
 import {createBrowserRouter, Navigate} from 'react-router'
-import ProblemsPage from "./pages/problems"
-import ProblemPage from './pages/problem';
+import ProblemsPage from "./pages/problems/list"
 import ProblemSetsPage from './pages/problem-sets/list'
 
 import { AppLayout } from './layout/app';
@@ -17,6 +16,9 @@ import { PrivateRoute } from './components/auth/private-route';
 import { AuthLayout } from './layout/auth';
 import EntryTypesPage from './pages/entry-type/list';
 import { EntryTypeCreatePage } from './pages/entry-type/create';
+import { CompetitionCreatePage } from './pages/competition/create';
+import CompetitionsPage from './pages/competition/list';
+import CompetitionDetailPage from './pages/competition/detail';
 
 export const router = createBrowserRouter([
     {
@@ -45,8 +47,7 @@ export const router = createBrowserRouter([
                             {
                                 path: 'problems',
                                 children: [
-                                    { index: true, element: <ProblemsPage /> },
-                                    { path: ':problemId', element: <ProblemPage /> }
+                                    { index: true, element: <ProblemsPage /> },                                    
                                 ]
                             },
                             {
@@ -83,6 +84,14 @@ export const router = createBrowserRouter([
                                 children: [
                                     {index: true, element: <EntryTypesPage />},
                                     {path: 'new', element: <EntryTypeCreatePage />}
+                                ]
+                            },
+                            {
+                                path: 'competitions',
+                                children: [
+                                    {index: true, element: <CompetitionsPage />},
+                                    {path: 'new', element: <CompetitionCreatePage />},
+                                    {path: ':competitionId', element: <CompetitionDetailPage/>},    
                                 ]
                             }
                         ]

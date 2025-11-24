@@ -98,6 +98,7 @@ export function AppHeader() {
             <NavDropdown label="Contests" basePath="contests" />
             <NavDropdown label="Contest Participations" basePath="contest-participations" />
             <NavDropdown label="Entry types" basePath="entry-types" />
+            <NavDropdown label="Competitions" basePath="competitions" />
           </Box>
 
           {/* Botão de Logout ou Perfil (Opcional) */}
