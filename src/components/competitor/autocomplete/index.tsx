@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 import competitorService from "../../../services/competitorService";
 import type { Competitor } from "../../../schemas/entities/competitor";
 
-export default function CompetitorAutocomplete() {
+interface CompetitorAutocompleteProps {
+    name: string; // Ex: "attempts.0.problemSet"
+}
+export default function CompetitorAutocomplete({ name = "competitor"}: CompetitorAutocompleteProps) {
   // Pegue o control, assim como no outro componente
   const { control } = useFormContext();
   const [options, setOptions] = useState<Competitor[]>([]);
@@ -22,7 +25,7 @@ export default function CompetitorAutocomplete() {
 
   return (
     <Controller
-      name="competitor"
+      name={name}
       control={control}
       render={({ field }) => (
         <Autocomplete          

@@ -20,7 +20,11 @@ export const problemAttemptSchema = z.object({
     observationDifficulty: z.number().nullable(),
     implementationDifficulty: z.number().nullable(),
     generalDifficulty: z.number().nullable(),
-    entryType: entryTypeSchema.nullable()
+    entryType: entryTypeSchema.nullable(),
+    tricks: z.string().nullable(),
+    generalIdea: z.string().nullable(),
+    comments: z.string().nullable(),
+    solved: z.boolean(),
 })
 
 export type ProblemAttempt = z.infer<typeof problemAttemptSchema>

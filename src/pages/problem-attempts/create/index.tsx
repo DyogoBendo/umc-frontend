@@ -7,12 +7,14 @@ import ProblemAutocomplete from "../../../components/problem/autocomplete-byprob
 import ProblemSetAutocomplete from "../../../components/problem-set/autocomplete";
 import { problemAttemptFormSchema, type ProblemAttemptForm} from "../../../schemas/forms/problemAttemptForm";
 import PlatformAutocomplete from "../../../components/platform/autocomplete";
-import { Box, Stack, TextField, FormControlLabel, Checkbox, Button, Rating, Grid, Typography} from "@mui/material";
+import { Box, Stack, TextField, FormControlLabel, Checkbox, Button, Rating, Grid, Typography, Paper} from "@mui/material";
 import problemAttemptService from "../../../services/problemAttemptService";
 import { useNavigate } from "react-router";
 import TopicAutocomplete from "../../../components/topic/autocomplete";
 import { useAuth } from "../../../hooks/AuthContexts";
 import EntryTypeAutocomplete from "../../../components/entry-type/autocomplete";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 export function ProblemAttemptCreatePage() {
   const { competitor } = useAuth();
@@ -195,22 +197,97 @@ export function ProblemAttemptCreatePage() {
             </Grid>
           </Box>
 
-          {/* --- Campo de Checkbox (neededHelp) --- */}
-          <Controller
-            name="neededHelp"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    {...field}
-                    checked={field.value} // RHF controla o estado 'checked'
+          {/* --- NOVA SEÇÃO: STATUS (SOLVED) & AJUDA --- */}
+          <Paper variant="outlined" sx={{ p: 2, display: 'flex', justifyContent: 'space-around', bgcolor: '#f9f9f9' }}>
+            
+            {/* Checkbox SOLVED (Customizado para destaque) */}
+            <Controller
+                name="solved"
+                control={control}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        {...field}
+                        checked={field.value}
+                        icon={<CheckCircleOutlineIcon fontSize="large" />}
+                        checkedIcon={<CheckCircleIcon fontSize="large" color="success" />}
+                      />
+                    }
+                    label={<Typography fontWeight="bold" color={field.value ? "success.main" : "text.secondary"}>Problema Resolvido (AC)</Typography>}
                   />
-                }
-                label="Precisei de ajuda"
-              />
-            )}
-          />
+                )}
+            />
+
+            {/* Checkbox NEEDED HELP */}
+            <Controller
+              name="neededHelp"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={<Checkbox {...field} checked={field.value} />}
+                  label="Precisei de ajuda"
+                />
+              )}
+            />
+          </Paper>
+
+          {/* --- NOVA SEÇÃO: NOTAS E TEXTOS --- */}
+          <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 1, p: 2 }}>
+            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
+              Notas & Anotações
+            </Typography>
+            
+            <Stack spacing={2}>
+                <Controller
+                    name="generalIdea"
+                    control={control}
+                    render={({ field }) => (
+                    <TextField 
+                        {...field} 
+                        label="Ideia Geral / Solução" 
+                        multiline 
+                        rows={3} 
+                        fullWidth 
+                        placeholder="Descreva a lógica principal..."
+                    />
+                    )}
+                />
+
+                <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <Controller
+                            name="tricks"
+                            control={control}
+                            render={({ field }) => (
+                            <TextField 
+                                {...field} 
+                                label="Truques / Corner Cases" 
+                                multiline 
+                                rows={2} 
+                                fullWidth 
+                            />
+                            )}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <Controller
+                            name="comments"
+                            control={control}
+                            render={({ field }) => (
+                            <TextField 
+                                {...field} 
+                                label="Comentários Extras" 
+                                multiline 
+                                rows={2} 
+                                fullWidth 
+                            />
+                            )}
+                        />
+                    </Grid>
+                </Grid>
+            </Stack>
+          </Box>
 
           <Button type="submit" variant="contained" size="large" disabled={isSubmitting}>
             {isSubmitting ? 'Salvando...' : 'Salvar'}

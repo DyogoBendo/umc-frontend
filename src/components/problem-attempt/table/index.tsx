@@ -1,6 +1,10 @@
 import {Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper,Link as MuiLink, IconButton, Tooltip, Chip, Stack, Rating} from '@mui/material';
 import type { ProblemAttempt } from '../../../schemas/entities/problemAttempt';
-import LaunchIcon from '@mui/icons-material/Launch'; // Ícone de link externo
+import LaunchIcon from '@mui/icons-material/Launch';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import DescriptionIcon from '@mui/icons-material/Description'; // Ícone para notas
+import LightbulbIcon from '@mui/icons-material/Lightbulb'; // Ícone para Ideia Geral
 
 
 interface TableProps{
@@ -27,6 +31,8 @@ export default function ProblemAttemptTable({problemAttempts}: TableProps) {
             <TableCell><strong>Tipo</strong></TableCell>
             <TableCell><strong>Topics</strong></TableCell>
             <TableCell><strong>Date</strong></TableCell>
+            {/* Nova Coluna: STATUS */}
+            <TableCell><strong>AC?</strong></TableCell>
             <TableCell><strong>Time</strong></TableCell>
             <TableCell><strong>WA</strong></TableCell>
             <TableCell><strong>Needed help</strong></TableCell>
@@ -34,6 +40,8 @@ export default function ProblemAttemptTable({problemAttempts}: TableProps) {
             <TableCell><strong>Obs.</strong></TableCell>
             <TableCell><strong>Impl.</strong></TableCell>
             <TableCell><strong>General</strong></TableCell>
+            {/* Nova Coluna: NOTAS (Agrupado) */}
+            <TableCell><strong>Notas</strong></TableCell>
             <TableCell><strong>Link</strong></TableCell>
           </TableRow>
         </TableHead>
@@ -67,6 +75,17 @@ export default function ProblemAttemptTable({problemAttempts}: TableProps) {
                 ) : "-"}
               </TableCell>
               <TableCell>{problemAttempt.date ? new Date(problemAttempt.date).toLocaleDateString() : "-"}</TableCell>
+              <TableCell>
+                {problemAttempt.solved ? (
+                    <Tooltip title="Resolvido (AC)">
+                        <CheckCircleIcon color="success" />
+                    </Tooltip>
+                ) : (
+                    <Tooltip title="Não Resolvido">
+                        <CancelIcon color="error" sx={{ opacity: 0.3 }} />
+                    </Tooltip>
+                )}
+              </TableCell>
               <TableCell>{problemAttempt.time ?? "-"}</TableCell>
               <TableCell>{problemAttempt.wa ?? "-"}</TableCell> 
               <TableCell>{problemAttempt.neededHelp ? "Sim" : "Não"}</TableCell>
@@ -93,6 +112,35 @@ export default function ProblemAttemptTable({problemAttempts}: TableProps) {
                   <Rating value={problemAttempt.generalDifficulty} readOnly size="small" max={5} />
                 ) : "-"}
               </TableCell>             
+              {/* 2. COLUNA DE NOTAS (Ideia, Truques, Comentários) */}
+              <TableCell>
+                <Stack direction="row" justifyContent="center" spacing={1}>
+                    {/* Se tiver Ideia Geral */}
+                    {problemAttempt.generalIdea && (
+                        <Tooltip title={`Ideia: ${problemAttempt.generalIdea}`} arrow>
+                            <LightbulbIcon fontSize="small" color="warning" />
+                        </Tooltip>
+                    )}
+                    
+                    {/* Se tiver Truques ou Comentários */}
+                    {(problemAttempt.tricks || problemAttempt.comments) && (
+                        <Tooltip 
+                            title={
+                                <div style={{ whiteSpace: 'pre-line' }}>
+                                    {problemAttempt.tricks && <div><strong>Truques:</strong> {problemAttempt.tricks}</div>}
+                                    {problemAttempt.tricks && problemAttempt.comments && <hr/>}
+                                    {problemAttempt.comments && <div><strong>Comentários:</strong> {problemAttempt.comments}</div>}
+                                </div>
+                            } 
+                            arrow
+                        >
+                            <DescriptionIcon fontSize="small" color="action" />
+                        </Tooltip>
+                    )}
+                    
+                    {!problemAttempt.generalIdea && !problemAttempt.tricks && !problemAttempt.comments && "-"}
+                </Stack>
+              </TableCell>
               <TableCell> {/* Centralize para ficar bonito */}
                 {problemAttempt.link ? (
                   <Tooltip title={problemAttempt.link}>

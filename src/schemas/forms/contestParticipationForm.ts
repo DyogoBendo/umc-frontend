@@ -12,7 +12,11 @@ export const contestParticipationFormSchema = z.object({
     date: z.date().optional(),
     link: z.string().optional(),
     problemAttempts: z.array(problemAttemptFormSchema),
-    entryType: entryTypeSchema.nullable()
+    entryType: entryTypeSchema.nullable(),
+    goodPoints: z.string().nullable(),
+    badPoints: z.string().nullable(),
+    comments: z.string().nullable(),
+    improvementIdeas: z.string().nullable(),
 })
 
 export type ContestParticipationForm = z.infer<typeof contestParticipationFormSchema>

@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, FormProvider, useFieldArray, useForm, type FieldErrors } from "react-hook-form";
 import { contestParticipationFormSchema, type ContestParticipationForm } from "../../../schemas/forms/contestParticipationForm";
-import { Box, Paper, Typography, Stack, IconButton, Button, TextField, Checkbox, FormControlLabel, Grid, Rating } from "@mui/material";
+import { Box, Paper, Typography, Stack, IconButton, Button, TextField, Checkbox, FormControlLabel, Grid, Rating, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import PlatformAutocomplete from "../../../components/platform/autocomplete";
@@ -18,6 +18,9 @@ import { useEffect } from "react";
 import contestProblemService from "../../../services/contestProblemService";
 import type { ProblemAttemptForm } from "../../../schemas/forms/problemAttemptForm";
 import EntryTypeAutocomplete from "../../../components/entry-type/autocomplete";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CompetitorAutocomplete from "../../../components/competitor/autocomplete";
 
 export function ContestParticipationCreatePage(){
     const navigate = useNavigate()
@@ -29,7 +32,11 @@ export function ContestParticipationCreatePage(){
         team: [],
         date: new Date(),
         link: '',
-        problemAttempts: [] // Começa vazio ou com um item inicial
+        problemAttempts: [],
+        goodPoints:'',
+        badPoints:'',
+        comments:'',
+        improvementIdeas:'',
         }    
     });
     const { control, watch, handleSubmit, formState: { isSubmitting,  } } = form;
@@ -88,7 +95,11 @@ export function ContestParticipationCreatePage(){
                         observationDifficulty: 0,
                         implementationDifficulty: 0,
                         generalDifficulty: 0,
-                        entryType: null
+                        entryType: null,                                
+                        tricks:null,
+                        generalIdea:null,
+                        comments:null,
+                        solved:false,
                     }));
 
                     // SUBSTITUI a lista atual pela nova lista
@@ -194,123 +205,211 @@ export function ContestParticipationCreatePage(){
             
             <Stack spacing={3}>
                 {fields.map((field, index) => (
-                    <Paper key={field.id} sx={{ p: 3, position: 'relative', borderLeft: '6px solid #1976d2' }}>
+                    <Accordion key={field.id} sx={{ p: 3, position: 'relative', borderLeft: '6px solid #1976d2' }}>                       
                         {/* Botão de Remover Item (canto superior direito) */}
+
+                        <AccordionSummary>
+                        <Typography variant="subtitle2" sx={{ mb: 2, color: 'text.secondary' }}>
+                            Problema #{index + 1}
+                        </Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            
                         <IconButton 
                             onClick={() => remove(index)}
                             color="error"
                             sx={{ position: 'absolute', top: 8, right: 8 }}
-                        >
+                            >
                             <DeleteIcon />
                         </IconButton>
 
-                        <Typography variant="subtitle2" sx={{ mb: 2, color: 'text.secondary' }}>
-                            Problema #{index + 1}
-                        </Typography>
-
-                        <Stack spacing={2}>
-                            <Stack spacing={2.5} direction={"row"}>
-                                {/* LINHA 1: Problem Set e Problema */}
-                                
-                                <Box sx={{ flex: 1 }}>
-                                    <ProblemAutocomplete 
-                                        name={`problemAttempts.${index}.problem`} 
-                                        problemSetFieldName={`problemAttempts.${index}.problemSet`} 
-                                    />
-                                </Box>
-                                <Box sx={{ flex: 1 }}>
-                                    <ProblemSetAutocomplete name={`problemAttempts.${index}.problemSet`} />                                                                
-                                </Box>                                                                                                
-                            </Stack>                            
-                            <Stack spacing={2.5} direction={"row"}>
-                                <Box sx={{ flex: 1 }}>
-                                    <Controller
-                                        name={`problemAttempts.${index}.wa`} // <--- Nome dinâmico
-                                        control={control}
-                                        render={({ field, fieldState }) => (
-                                            <TextField
-                                                {...field}
-                                                label="WA"
-                                                type="number"
-                                                fullWidth
-                                                error={!!fieldState.error}
-                                                helperText={fieldState.error?.message}
-                                                // Converte string para number
-                                                onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
-                                            />
-                                        )}
-                                    />
-                                </Box>
-                                <Box sx={{ flex: 1 }}>
-                                    <Controller
-                                        name={`problemAttempts.${index}.time`}
-                                        control={control}
-                                        render={({ field, fieldState }) => (
-                                            <TextField
-                                                {...field}
-                                                label="Time (min)"
-                                                type="number"
-                                                fullWidth
-                                                error={!!fieldState.error}
-                                                helperText={fieldState.error?.message}
-                                                onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
-                                            />
-                                        )}
-                                    />
-                                </Box>
-                                
-                                <Controller
-                                    name={`problemAttempts.${index}.neededHelp`}
-                                    control={control}
-                                    render={({ field }) => (
-                                        <FormControlLabel
-                                            control={
-                                                <Checkbox
-                                                    {...field}
-                                                    checked={field.value}
-                                                />
-                                            }
-                                            label="Precisei de ajuda"
+                                                 
+                            <Stack spacing={2}>
+                                <Stack spacing={2.5} direction={"row"}>
+                                    {/* LINHA 1: Problem Set e Problema */}
+                                    
+                                    <Box sx={{ flex: 1 }}>
+                                        <ProblemAutocomplete 
+                                            name={`problemAttempts.${index}.problem`} 
+                                            problemSetFieldName={`problemAttempts.${index}.problemSet`} 
                                         />
-                                    )}
-                                />
-                            </Stack>
-                            {/* --- NOVA SEÇÃO: DIFICULDADES --- */}
-                            <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 1, p: 2 }}>
-                                <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
-                                Avaliação de Dificuldade (0-5)
-                                </Typography>
-                                
-                            <Grid container spacing={2}>
-                                {/* Agora fazemos o map na variável tipada */}
-                                {difficultyFields.map((item) => (
-                                    <Grid size={{ xs: 6 }} key={item.name}>
+                                    </Box>
+                                    <Box sx={{ flex: 1 }}>
+                                        <ProblemSetAutocomplete name={`problemAttempts.${index}.problemSet`} />                                                                
+                                    </Box>                                                                                                
+                                </Stack>                  
+
+                                <CompetitorAutocomplete name={`problemAttempts.${index}.competitor`}/> 
+                                {/* NOVA SEÇÃO: STATUS SOLVED (Em destaque no final do card) */}
+                                <Paper variant="outlined" sx={{ p: 1, mt: 2, display: 'flex', justifyContent: 'space-around', bgcolor: '#f9f9f9' }}>
                                     <Controller
-                                        name={`problemAttempts.${index}.${item.name}`}
+                                        name={`problemAttempts.${index}.solved`}
                                         control={control}
                                         render={({ field }) => (
-                                        <Box display="flex" flexDirection="column">
-                                            <Typography component="legend" variant="caption">
-                                            {item.label}
-                                            </Typography>
-                                            <Rating
-                                            name={`problemAttempts.${index}.${item.name}`}
-                                            value={Number(field.value) || 0} // Converte null para 0 visualmente
-                                            onChange={(_, newValue) => {
-                                                field.onChange(newValue); // newValue pode ser null (se limpar) ou number
-                                            }}
+                                            <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                {...field}
+                                                checked={field.value}
+                                                icon={<CheckCircleOutlineIcon fontSize="medium" />}
+                                                checkedIcon={<CheckCircleIcon fontSize="medium" color="success" />}
+                                                />
+                                            }
+                                            label={<Typography fontWeight="bold" color={field.value ? "success.main" : "text.secondary"}>Problema Resolvido (AC)</Typography>}
                                             />
-                                        </Box>
                                         )}
                                     />
+                                     <Controller
+                                        name={`problemAttempts.${index}.neededHelp`}
+                                        control={control}
+                                        render={({ field }) => (
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox
+                                                        {...field}
+                                                        checked={field.value}
+                                                    />
+                                                }
+                                                label="Precisei de ajuda"
+                                            />
+                                        )}
+                                    />
+                                </Paper>         
+                                <Stack spacing={2.5} direction={"row"}>
+                                    <Box sx={{ flex: 1 }}>
+                                        <Controller
+                                            name={`problemAttempts.${index}.wa`} // <--- Nome dinâmico
+                                            control={control}
+                                            render={({ field, fieldState }) => (
+                                                <TextField
+                                                    {...field}
+                                                    label="WA"
+                                                    type="number"
+                                                    fullWidth
+                                                    error={!!fieldState.error}
+                                                    helperText={fieldState.error?.message}
+                                                    // Converte string para number
+                                                    onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
+                                                />
+                                            )}
+                                        />
+                                    </Box>
+                                    <Box sx={{ flex: 1 }}>
+                                        <Controller
+                                            name={`problemAttempts.${index}.time`}
+                                            control={control}
+                                            render={({ field, fieldState }) => (
+                                                <TextField
+                                                    {...field}
+                                                    label="Time (min)"
+                                                    type="number"
+                                                    fullWidth
+                                                    error={!!fieldState.error}
+                                                    helperText={fieldState.error?.message}
+                                                    onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
+                                                />
+                                            )}
+                                        />
+                                    </Box>
+                                    
+                                   
+                                </Stack>
+                                {/* --- NOVA SEÇÃO: DIFICULDADES --- */}
+                                <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 1, p: 2 }}>
+                                    <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
+                                    Avaliação de Dificuldade (0-5)
+                                    </Typography>
+                                    
+                                <Grid container spacing={2}>
+                                    {/* Agora fazemos o map na variável tipada */}
+                                    {difficultyFields.map((item) => (
+                                        <Grid size={{ xs: 6 }} key={item.name}>
+                                        <Controller
+                                            name={`problemAttempts.${index}.${item.name}`}
+                                            control={control}
+                                            render={({ field }) => (
+                                            <Box display="flex" flexDirection="column">
+                                                <Typography component="legend" variant="caption">
+                                                {item.label}
+                                                </Typography>
+                                                <Rating
+                                                name={`problemAttempts.${index}.${item.name}`}
+                                                value={Number(field.value) || 0} // Converte null para 0 visualmente
+                                                onChange={(_, newValue) => {
+                                                    field.onChange(newValue); // newValue pode ser null (se limpar) ou number
+                                                }}
+                                                />
+                                            </Box>
+                                            )}
+                                        />
+                                        </Grid>
+                                    ))}
                                     </Grid>
-                                ))}
-                                </Grid>
-                            </Box>
+                                </Box>
 
-                            <TopicAutocomplete name={`problemAttempts.${index}.topics`} />        
-                        </Stack>
-                    </Paper>
+                                <TopicAutocomplete name={`problemAttempts.${index}.topics`} />      
+
+                                {/* NOVA SEÇÃO: NOTAS E TEXTOS */}
+                                <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 1, p: 2, mt: 2 }}>
+                                    <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
+                                        Notas & Anotações
+                                    </Typography>
+                                    
+                                    <Stack spacing={2}>
+                                        <Controller
+                                            name={`problemAttempts.${index}.generalIdea`}
+                                            control={control}
+                                            render={({ field }) => (
+                                            <TextField 
+                                                {...field} 
+                                                label="Ideia Geral / Solução" 
+                                                multiline 
+                                                rows={2} 
+                                                fullWidth 
+                                                placeholder="Descreva a lógica principal..."
+                                            />
+                                            )}
+                                        />
+
+                                        <Grid container spacing={2}>
+                                            <Grid size={{ xs: 12, md: 6 }}>
+                                                <Controller
+                                                    name={`problemAttempts.${index}.tricks`}
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                    <TextField 
+                                                        {...field} 
+                                                        label="Truques / Corner Cases" 
+                                                        multiline 
+                                                        rows={2} 
+                                                        fullWidth 
+                                                    />
+                                                    )}
+                                                />
+                                            </Grid>
+                                            <Grid size={{ xs: 12, md: 6 }}>
+                                                <Controller
+                                                    name={`problemAttempts.${index}.comments`}
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                    <TextField 
+                                                        {...field} 
+                                                        label="Comentários Extras" 
+                                                        multiline 
+                                                        rows={2} 
+                                                        fullWidth 
+                                                    />
+                                                    )}
+                                                />
+                                            </Grid>
+                                        </Grid>
+                                    </Stack>
+                                </Box>
+
+                                                                
+                            </Stack>
+                            </AccordionDetails>                          
+                    </Accordion>
                 ))}
             </Stack>
             
@@ -332,12 +431,96 @@ export function ContestParticipationCreatePage(){
                     observationDifficulty: 0,
                     implementationDifficulty: 0,
                     generalDifficulty: 0,
-                    entryType: null
+                    entryType: null,
+                    tricks:null,
+                    generalIdea:null,
+                    comments:null,
+                    solved:false,
                 })}
                 sx={{ mt: 3, mb: 5, width: '100%', borderStyle: 'dashed' }}
             >
                 Adicionar Problema
             </Button>
+
+            {/* --- SEÇÃO: REFLEXÃO E FEEDBACK --- */}
+            <Paper sx={{ p: 3, mt: 4, mb: 3, bgcolor: '#fafafa', border: '1px solid #e0e0e0' }}>
+                <Typography variant="h6" gutterBottom color="primary">
+                    Reflexão Pós-Prova
+                </Typography>
+                
+                <Grid container spacing={3}>
+                    {/* Linha 1: Pontos Positivos e Negativos */}
+                    <Grid size={{ xs: 12, md: 4 }}>
+                        <Controller
+                            name="goodPoints"
+                            control={control}
+                            render={({ field }) => (
+                                <TextField
+                                    {...field}
+                                    label="Pontos Positivos / O que deu certo?"
+                                    multiline
+                                    rows={3}
+                                    fullWidth
+                                    placeholder="Ex: Comunicação do time, estratégia inicial..."
+                                    color="success"
+                                    focused={!!field.value} // Destaque visual sutil
+                                />
+                            )}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                        <Controller
+                            name="badPoints"
+                            control={control}
+                            render={({ field }) => (
+                                <TextField
+                                    {...field}
+                                    label="Pontos Negativos / O que deu errado?"
+                                    multiline
+                                    rows={3}
+                                    fullWidth
+                                    placeholder="Ex: Bugs bobos, leitura errada, falta de templates..."
+                                    color="error"
+                                    focused={!!field.value}
+                                />
+                            )}
+                        />
+                    </Grid>
+
+                    {/* Linha 2: Melhorias e Comentários */}
+                    <Grid size={{ xs: 12, md: 4 }}>
+                        <Controller
+                            name="improvementIdeas"
+                            control={control}
+                            render={({ field }) => (
+                                <TextField
+                                    {...field}
+                                    label="Ideias para Melhorar (Action Items)"
+                                    multiline
+                                    rows={3}
+                                    fullWidth
+                                    placeholder="O que treinar para a próxima?"
+                                />
+                            )}
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 12 }}>
+                        <Controller
+                            name="comments"
+                            control={control}
+                            render={({ field }) => (
+                                <TextField
+                                    {...field}
+                                    label="Comentários Gerais"
+                                    multiline
+                                    rows={2}
+                                    fullWidth
+                                />
+                            )}
+                        />
+                    </Grid>
+                </Grid>
+            </Paper>
 
             {/* Botão Salvar Geral */}
             <Button 
