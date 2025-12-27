@@ -19,3 +19,14 @@ umcAPI.interceptors.request.use((config) => {
   return config;
 });
 
+
+export const gathererAPI = axios.create({
+	baseURL: 'http://localhost:8000',
+	headers: {
+		'Access-Control-Allow-Origin': '*',
+		'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+		'Access-Control-Expose-Headers': '*',
+	},
+});
+
+

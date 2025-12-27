@@ -13,8 +13,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import TeamAutocomplete from "../../../components/competitor/team-autocomplete";
 import contestParticipationService from "../../../services/contestParticipationService";
-import { useNavigate } from "react-router";
-import { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router";
+import { useEffect, useState } from "react";
 import contestProblemService from "../../../services/contestProblemService";
 import type { ProblemAttemptForm } from "../../../schemas/forms/problemAttemptForm";
 import EntryTypeAutocomplete from "../../../components/entry-type/autocomplete";
@@ -24,6 +24,8 @@ import CompetitorAutocomplete from "../../../components/competitor/autocomplete"
 
 export function ContestParticipationCreatePage(){
     const navigate = useNavigate()
+    const location = useLocation();
+    const [isFromImport, setIsFromImport] = useState(false);
     const form = useForm<ContestParticipationForm>({
         resolver: zodResolver(contestParticipationFormSchema),
         defaultValues: {
@@ -39,7 +41,7 @@ export function ContestParticipationCreatePage(){
         improvementIdeas:'',
         }    
     });
-    const { control, watch, handleSubmit, formState: { isSubmitting,  } } = form;
+    const { control, reset, watch, setValue, handleSubmit, formState: { isSubmitting,  } } = form;
     const { fields, append, remove, replace } = useFieldArray({
         control,
         name: "problemAttempts"
@@ -60,17 +62,60 @@ export function ContestParticipationCreatePage(){
     // 2. Observe o campo 'contest'
     const selectedContest = watch("contest");
 
+// 1. Lógica de Importação
+    useEffect(() => {
+        // Verifica se existem dados importados no state da rota
+        if (location.state && location.state.importedData) {
+            setIsFromImport(true);
+            const imported = location.state.importedData;
+            
+            console.log("Dados importados recebidos:", imported);
+
+            // 1. Reseta os campos "simples" (Contest, Data, Comentários Gerais)
+            reset({
+                ...form.getValues(),
+                ...imported,
+                // IMPORTANTE: Passe o array vazio aqui para o reset não brigar com o replace
+                // ou passe o array completo se quiser tentar forçar, mas o replace é mais garantido para UI
+                problemAttempts: [] 
+            });
+
+            // 2. Força a atualização do Field Array com os dados importados
+            if (imported.problemAttempts && imported.problemAttempts.length > 0) {
+                // Pequeno timeout para garantir que o reset terminou e a UI está limpa
+                setTimeout(() => {
+                    replace(imported.problemAttempts);                                                     
+                }, 0);
+            }            
+
+            if (imported.contest) {
+                setValue("contest", {
+                    id: imported.contest.id,
+                    title: imported.contest.title, // IMPORTANTE: Mapear title -> name
+                }, { shouldValidate: true });
+            }
+
+            if (imported.link) {
+                setValue("link", imported.link, { shouldValidate: true });
+            }            
+
+            // Opcional: Limpar o state para evitar re-importação ao navegar internamente
+            // window.history.replaceState({}, document.title);
+        }
+    }, [location.state, reset, replace]); // Adicione replace nas dependências
+
     useEffect(() => {
         const fetchContestProblems = async () => {
+            if(isFromImport)return;
             // Caso A: O usuário limpou o campo ou digitou um texto novo (string)
-            if (!selectedContest || selectedContest.id === null) {
+            if ((!selectedContest || selectedContest.id === null) ) {
                 // Opção: Limpar a lista de problemas para começar do zero
                 replace([]); 
                 return;
             }
 
             // Caso B: É um objeto Contest válido (tem ID)
-            if (selectedContest.id) {
+            if ( selectedContest.id) {
                 try {
                     // Busca os problemas vinculados a esse contest
                     const contestProblems = await contestProblemService.getAll({ contestId: selectedContest.id });
@@ -117,8 +162,9 @@ export function ContestParticipationCreatePage(){
     }, [selectedContest, replace]); // Executa sempre que o contest mudar
 
     const onSubmit = async (data: ContestParticipationForm) => {
+        console.log("data: " + data);
         try {      
-              console.log(data);
+              console.log("data: " + data);
               // Se não temos ID, estamos criando
               await contestParticipationService.create(data);
               console.log("Participação criada com sucesso!");

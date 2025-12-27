@@ -24,12 +24,22 @@ export default function ContestAutocomplete() {
     <Controller
       name="contest"
       control={control}
-      render={({ field, fieldState }) => (
+      render={({ field, fieldState }) => {
+        if (fieldState.error) {
+          console.log("ERRO NO CONTEST:", fieldState.error);
+        }
+        return (        
         <Autocomplete
           freeSolo 
           options={options}
           loading={loading}
           value={field.value}
+          isOptionEqualToValue={(option, value) => {
+            if (option.id && value.id) {
+               return option.id === value.id;
+            }            
+            return (option.name || option.title) === (value.name || value.title);
+          }}
           blurOnSelect
           onBlur={(event) => {
             field.onBlur();
@@ -74,7 +84,7 @@ export default function ContestAutocomplete() {
             />
           )}
         />
-      )}
+      )}}
     />
   );
 }

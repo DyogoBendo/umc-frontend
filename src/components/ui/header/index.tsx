@@ -8,10 +8,12 @@ import LogoutIcon from '@mui/icons-material/Logout';
 // --- Sub-componente para os Botões com Dropdown ---
 interface NavDropdownProps {
   label: string;
-  basePath: string; // Ex: 'problems', 'competitors'
+  basePath: string; 
+  create?: boolean | undefined;
+  extract?: boolean | undefined;
 }
 
-function NavDropdown({ label, basePath }: NavDropdownProps) {
+function NavDropdown({ label, basePath, create, extract }: NavDropdownProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -54,13 +56,25 @@ function NavDropdown({ label, basePath }: NavDropdownProps) {
         </MenuItem>
 
 
-        <MenuItem 
-          onClick={handleClose} 
-          component={RouterLink} 
-          to={`/${basePath}/new`}
-        >
-          Cadastrar
-        </MenuItem>
+        {create && (
+          <MenuItem 
+            onClick={handleClose} 
+            component={RouterLink} 
+            to={`/${basePath}/new`}
+          >
+            Cadastrar
+          </MenuItem>
+        )}
+        
+        {extract && (
+          <MenuItem 
+            onClick={handleClose} 
+            component={RouterLink} 
+            to={`/${basePath}/import`}
+          >
+            Importar
+          </MenuItem>
+        )}
       </Menu>
     </Box>
   );
@@ -91,14 +105,13 @@ export function AppHeader() {
 
           {/* ÁREA DOS MENUS (Horizontal) */}
           <Box sx={{ flexGrow: 1, display: 'flex', gap: 2 }}>
-            <NavDropdown label="Problems" basePath="problems" />
-            <NavDropdown label="Competitors" basePath="competitors" />
+            <NavDropdown label="Problems" basePath="problems" />            
             <NavDropdown label="Problem Sets" basePath="problem-sets" />
-            <NavDropdown label="Problem Attempts" basePath="problem-attempts" />
+            <NavDropdown label="Problem Attempts" basePath="problem-attempts" create />
             <NavDropdown label="Contests" basePath="contests" />
-            <NavDropdown label="Contest Participations" basePath="contest-participations" />
-            <NavDropdown label="Entry types" basePath="entry-types" />
-            <NavDropdown label="Competitions" basePath="competitions" />
+            <NavDropdown label="Contest Participations" basePath="contest-participations" create extract/>
+            <NavDropdown label="Entry types" basePath="entry-types" create />
+            <NavDropdown label="Competitions" basePath="competitions" create />
           </Box>
 
           {/* Botão de Logout ou Perfil (Opcional) */}

@@ -20,6 +20,7 @@ import { CompetitionCreatePage } from './pages/competition/create';
 import CompetitionsPage from './pages/competition/list';
 import CompetitionDetailPage from './pages/competition/detail';
 import RegisterPage from './pages/auth/register';
+import ContestImportPage from './pages/contest-participation/import';
 
 export const router = createBrowserRouter([
     {
@@ -81,6 +82,7 @@ export const router = createBrowserRouter([
                                 children: [
                                     { index: true, element: <ContestParticipationsPage /> },
                                     { path: 'new', element: <ContestParticipationCreatePage /> },
+                                    { path: 'import', element: <ContestImportPage /> },
                                     { path: ':contestParticipationId', element: <ContestParticipationDetailPage /> }
                                 ]
                             },

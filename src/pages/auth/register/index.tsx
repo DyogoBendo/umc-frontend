@@ -85,6 +85,15 @@ export default function RegisterPage() {
               helperText={errors.name?.message}
             />
 
+            {/* Campo codeforces handle */}
+            <TextField
+              label="Codeforces Handle"
+              fullWidth
+              {...register("codeforcesHandle")}
+              error={!!errors.codeforcesHandle}
+              helperText={errors.codeforcesHandle?.message}
+            />
+
             {/* Campo USERNAME */}
             <TextField
               label="Username"
